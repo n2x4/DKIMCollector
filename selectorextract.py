@@ -3,6 +3,7 @@ import datetime
 import json
 import eml_parser
 import re
+import pydig
 
 def json_serial(obj):
   if isinstance(obj, datetime.datetime):
@@ -34,4 +35,10 @@ for dkim_string in dkim_signature:
     value = "=".join(value)
     # If the key is "s", print the value
     if key.strip() == "s":
+        # Print the value and store the value in the selector variable
+        selector = value.strip()
         print(value.strip())
+
+# dig the selector
+dnsquery = pydig.query(selector, 'NS')
+print(dnsquery)        
