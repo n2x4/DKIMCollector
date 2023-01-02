@@ -46,4 +46,9 @@ for dkim_string in dkim_signature:
 
 #dig the selector
 dnsquery = pydig.query(selector + "._domainkey." + dkimdomain, 'TXT')
-print(dnsquery)
+
+for item in dnsquery:
+  if "p=" in item:
+    p_index = item.index("p=")
+    p_value = item[p_index+2:]
+    print(p_value)
