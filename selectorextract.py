@@ -1,9 +1,10 @@
-import sys 
+import sys
 import datetime
 import json
 import eml_parser
 import re
 import pydig
+import datetime
 
 def json_serial(obj):
   if isinstance(obj, datetime.datetime):
@@ -37,15 +38,17 @@ for dkim_string in dkim_signature:
     if key.strip() == "d":
         #print the domain detected and store in dkimdomain variable
         dkimdomain = value.strip()
-        print(dkimdomain)
+        print("Domain Evaluated - " + dkimdomain)
     # If the key is "s", print the value (selector)
     if key.strip() == "s":
         #print the selector detected and store in selector variable
         selector = value.strip()
-        print(selector)
+        print("Selector DNS - " + selector)
 
 #dig the selector
 dnsquery = pydig.query(selector + "._domainkey." + dkimdomain, 'TXT')
+
+#Extract p value only and clean up any quotes or spaces dig adds to the output
 
 for item in dnsquery:
   if "p=" in item:
@@ -53,4 +56,12 @@ for item in dnsquery:
     p_value = item[p_index+2:]
     p_value = p_value.strip('"')
     p_value = p_value.replace('" "', '')
-    print(p_value)
+    print("DKIM - " + p_value)
+
+#current date
+current_date = datetime.date.today()
+print(current_date)
+
+#write to file where the filename is the domain and selector and the contents is the DKIM p value
+with open (dkimdomain +"_"+ selector, 'w') as f:
+  f.write("DKIM - " + p_value)
