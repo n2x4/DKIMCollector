@@ -51,4 +51,6 @@ for item in dnsquery:
   if "p=" in item:
     p_index = item.index("p=")
     p_value = item[p_index+2:]
+    p_value = p_value.strip('"')
+    p_value = p_value.replace('" "', '')
     print(p_value)
