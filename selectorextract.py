@@ -23,7 +23,7 @@ parsed_eml = ep.decode_email_bytes(raw_email)
 # extract the email header
 header = parsed_eml['header']
 
-#Oprint(header)
+
 # extract the value of the "DKIM-Signature" field
 dkim_signature = header["header"]["dkim-signature"]
 
@@ -33,12 +33,17 @@ for dkim_string in dkim_signature:
     # Split the item by "=" and assign the first element to the key and the second element to the value
     key, *value = item.split("=")
     value = "=".join(value)
-    # If the key is "s", print the value
+    # If the key is "d", print the value (domain)
+    if key.strip() == "d":
+        #print the domain detected and store in dkimdomain variable
+        dkimdomain = value.strip()
+        print(dkimdomain)
+    # If the key is "s", print the value (selector)
     if key.strip() == "s":
-        # Print the value and store the value in the selector variable
+        #print the selector detected and store in selector variable
         selector = value.strip()
-        print(value.strip())
+        print(selector)
 
-# dig the selector
-dnsquery = pydig.query(selector, 'NS')
-print(dnsquery)        
+#dig the selector
+dnsquery = pydig.query(selector + "._domainkey." + dkimdomain, 'TXT')
+print(dnsquery)
